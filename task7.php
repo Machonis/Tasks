@@ -1,28 +1,118 @@
 <?php
-/*- private свойства post и get. Свойствам по-умолчанию присваиваются пустые массивы
-    - private метод для удаления пробелов (delGaps()) - оболочка над функцией trim
-    - private метод для удаления тегов (delTags()) - оболочка над strip_tags
-    - private метод handleRequest для обработки GET и POST массивов. Метод задействует
-методы delGaps() и delTags() и заполняет свойства post и get. Метод принимает на вход
-параметр request - массив с данными. Метод должен анализировать данные из request
-параметра и распределить данные в get и post свойства. Для этого используйте
-$_SERVER[‘REQUEST_METHOD’] для определения типа параметра - GET или POST.*/
-class Validator {
-    private $post=[];
-    private $get=[];
+declare(strict_types=1);
 
-    private function delGaps()
+class ValidatorGetAndPost
+{
+    /*/**
+     * type of http request
+     * @var string
+     *
+    private $requestType;*/
+    
+    /**
+     * array of the request params
+     * @var array
+     */
+    private $requestParams = [];
+
+    /**
+     * array of cookies
+     * @var array
+     */
+    private $cookie = [];
+
+    /**
+     * validatorGetAndPost constructor
+     * @param array $request
+     * @param $cookie
+     */
+    public function __construct( array $request, array $cookie)
     {
-
+        $this->handleRequest($request)
+             ->handleCookie(isset($_COOKIE)?? null);
     }
 
-    private function delTags()
+    /**
+     * @param string $value
+     * @return string
+     */
+    private function delGaps(string $value)
     {
-
+        if (!empty($value)) {
+            return trim($value);
+        } else {
+            return '';
+        }
     }
 
-    private function handleRequest()
+    /**
+     * remove html tags
+     * @param string $value
+     * @return null|string
+     */
+    private function delTags(string $value)
     {
+        if (!empty($value)) {
+            return strip_tags($value);
+        } else {
+            return '';
+        }
+    }
 
+    /**
+     * @param array $request
+     * @return $this
+     */
+    private function handleRequest(array $request)
+    {
+        foreach ($request as $key => $value) {
+            $this->requestParams[$key] = $this->delGaps($this->delTags($value));
+        }
+        return $this;
+    }
+
+    /**
+     * @param $cookie
+     * @return $this
+     */
+    private function handleCookie($cookie)
+    {
+        foreach ($cookie as $key => $value) {
+            $this->cookie[$key] = $this->delGaps($this->delTags($value));
+        }
+        return $this;
+    }
+
+    /**
+     * get all of params
+     * @return array
+     */
+    public function getParams()
+    {
+        $params = [];
+        foreach ($this->requestParams as $key => $value) {
+            $params[$key] = $value;
+        }
+
+        foreach ($this->cookie as $key => $value) {
+            $params[$key] = $value;
+        }
+        return $params;
+    }
+
+    /**
+     * get only 1 param
+     * @param $param
+     * @return mixed|null
+     */
+    public function getParam($param)
+    {
+        $params = $this->getParams();
+        foreach ($params as $key => $value) {
+            if ($key == $param) {
+                return $params[$key];
+            }
+        }
+        return null;
     }
 }
