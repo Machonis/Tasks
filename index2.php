@@ -31,8 +31,8 @@ $_REQUEST. В конструкторе класса значение перед�
     <div>
         <form action="index2.php" method="POST" >
             <div>
-                <div><strong>Данные GET</strong><input type="text" name='get' value=""></div>
-                <div><strong>Данные GET</strong><input type="text" name='get2' value=""></div>
+                <div><strong>Данные GET</strong><input type="text" id="1" name='request' value=""></div>
+                <div><strong>Данные GET</strong><input type="text" id="2" name='request2' value=""></div>
                 <div><input type="submit" value="GO"></div>
             </div>
         </form>
@@ -47,7 +47,7 @@ $_REQUEST. В конструкторе класса значение перед�
     var_dump($_REQUEST);
     echo "</pre>";
     setcookie('cookie', $var, time() + 60, '/');
-    $object1 = new ValidatorGetAndPost($_SERVER['REQUEST_METHOD'],$_REQUEST, $_COOKIE);
+    $object1 = new ValidatorGetAndPost($_REQUEST, $_COOKIE);
 
     var_dump($_COOKIE);
 
@@ -57,7 +57,7 @@ $_REQUEST. В конструкторе класса значение перед�
 
 
     echo "<pre>";
-    var_dump($object1->getParam("cookie"));
+    var_dump($object1->getParam("request"));
     echo "</pre>";
 }
 ?>

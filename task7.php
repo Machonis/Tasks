@@ -29,7 +29,7 @@ class ValidatorGetAndPost
     public function __construct( array $request, array $cookie)
     {
         $this->handleRequest($request)
-             ->handleCookie(isset($_COOKIE)?? null);
+             ->handleCookie(isset($_COOKIE) ? $_COOKIE : null);
     }
 
     /**
